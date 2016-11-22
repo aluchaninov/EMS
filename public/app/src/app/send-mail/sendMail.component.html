@@ -1,0 +1,117 @@
+<h2 class="mail-form_main-header">!!!Evil spam form!!!</h2>
+
+<form novalidate #f="ngForm" (ngSubmit)="send(f)" class="mail-form">
+    <label class="row">
+        <span class="one-third mail-form_item-name">
+            your email:
+        </span>
+
+        <span class="two-thirds input-with-symbol_wrap">
+            <input class="mail-form_item-input input-with-symbol_input" type="text" name="username" [ngModel]="user.username" required autofocus>
+            <span class="input-with-symbol_symbol">@gmail.com</span>
+        </span>
+    </label>
+
+    <label class="row">
+        <span class="one-third mail-form_item-name">
+            password:
+        </span>
+
+        <input class="two-thirds mail-form_item-input" type="password" name="password" [ngModel]="user.password" required>
+    </label>
+
+    <p class="row">
+        <button (click)="saveCreds(f.value)" class="one-third-push">save this creds</button>
+        <button (click)="removeCreds()" class="">remove saved creds</button>
+    </p>
+
+    <label class="row">
+        <span class="one-third mail-form_item-name">
+            list of receivers from file:
+        </span>
+
+        <span class="custom-file-upload">
+            <input type="file" id="fileInput" class="input-file" name="fileInput" ng2FileSelect [uploader]="uploader" (change)="processEmailsFile($event)" ngModel/>
+            Upload file
+        </span>
+
+        <button type="button" (click)="clearReceiversList('fileInput')" [disabled]="user.receiversMails === ''">
+            Clear receivers
+        </button>
+    </label>
+
+    <label class="row">
+        <span class="one-third mail-form_item-name">
+            to:
+        </span>
+
+        <input class="two-thirds mail-form_item-input"
+               type="text"
+               #receiversMails="ngModel"
+               (change)="verifyMails(receiversMails.value)"
+               name="receiversMails"
+               [ngModel]="user.receiversMails"
+               required>
+
+        <span *ngIf="receiversMails?.errors?.required && (receiversMails?.touched || receiversMails?.dirty || f.submitted)" class="mail-form_message row">
+            <b class="one-third-push two-thirds">Please provide email or emails separated by comma or via .xsls file</b>
+        </span>
+        <span *ngIf="receiversMails?.errors?.pattern && (receiversMails?.touched || receiversMails?.dirty || f.submitted)" class="mail-form_message row">
+            <b class="one-third-push two-thirds">Please provide CORRECT email!!!!!f**k</b>
+        </span>
+    </label>
+
+    <label class="row">
+        <span class="one-third mail-form_item-name">
+            subject:
+        </span>
+
+        <input class="two-thirds mail-form_item-input" type="text" #subject="ngModel" name="subject" [(ngModel)]="user.subject" required>
+
+        <span *ngIf="subject?.errors?.required && (subject?.touched || subject?.dirty && f.submitted)" class="mail-form_message row">
+            <b class="one-third-push two-thirds">Please provide subject of the email</b>
+        </span>
+
+    </label>
+
+    <label class="row">
+        <textarea rows="10" class="mail-form_textarea" name="text" #textInput="ngModel" [ngModel]="user.text" required></textarea>
+
+        <span *ngIf="textInput?.errors?.required && (textInput?.touched || textInput?.dirty && f.submitted)" class="mail-form_message row">
+            <b class="two-thirds">Please provide message text of the email</b>
+        </span>
+    </label>
+
+    <button>send email</button>
+
+    <p *ngIf="message" class="mail-form_message">
+        {{message}}
+    </p>
+</form>
+
+<div class="sender-log row">
+    <div class="half-width" *ngIf="user?.receiversList?.length > 0">
+        <h3 class="sender-log_header row">Email will be sent to:</h3>
+
+        <ul class="receivers-list receivers-list_valid row">
+            <li *ngFor="let item of user?.receiversList" [ngClass]="item.status" class="receivers-list_valid_item row">
+                {{item.email}}
+
+                {{item.status === 'error' ? 'Bad email': null}}
+            </li>
+        </ul>
+    </div>
+
+    <div class="half-width" *ngIf="listOfBadEmails?.length > 0">
+        <h3 class="sender-log_header row">Invalid emails:</h3>
+
+        <ul class="receivers-list receivers-list_invalid row">
+            <li *ngFor="let item of listOfBadEmails" [ngClass]="item.status" class="receivers-list_invalid_item row">
+                {{item.email}}
+
+                {{item.status === 'error' ? 'Bad email': null}}
+            </li>
+        </ul>
+    </div>
+
+</div>

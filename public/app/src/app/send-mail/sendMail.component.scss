@@ -1,0 +1,145 @@
+.row {
+    display:         flex;
+    width:           100%;
+    justify-content: flex-start;
+    flex-wrap:       wrap;
+    box-sizing:      border-box;
+    align-items:     center;
+
+    > *:not(.row) {
+        display:       inline-block;
+        box-sizing:    border-box;
+        margin-bottom: 1em;
+    }
+
+    .one-third {
+        width: calc(100% / 3);
+
+        &-push {
+            margin-left: calc(100% / 3);
+        }
+    }
+
+    .two-thirds {
+        width: calc(100% / 1.5);
+    }
+
+    .half-width {
+        width: calc(100% / 2);
+    }
+}
+
+.mail-form {
+    &_main-header {
+        text-align:     center;
+        text-transform: uppercase;
+        margin-bottom:  2em;
+    }
+
+    display: block;
+
+    &_item-name {
+        text-align:    right;
+        padding-right: 10px;
+    }
+
+    &_item-input {
+        border:     none;
+        box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.04);
+        padding:    3px 10px;
+    }
+
+    &_textarea {
+        width: 100%;
+    }
+
+    &_message {
+        color:       red;
+        font-weight: bold;
+    }
+}
+
+.sender-log {
+    @extend .mail-form;
+}
+
+.receivers-list {
+    list-style: none;
+    padding:    0;
+    margin:     0;
+
+    &_invalid {
+    }
+
+    &_valid {
+        &_item {
+            padding-right: 30px;
+
+            &.pending {
+                color:           gray;
+                text-decoration: underline;
+            }
+            &.success {
+                color:      green;
+                background: url('checked.svg') 100% 50% no-repeat transparent;
+            }
+            &.error {
+                color:      darkred;
+                background: url('cancel.svg') 100% 50% no-repeat transparent;
+            }
+        }
+    }
+}
+
+button,
+.custom-file-upload {
+    @extend .mail-form_item-input;
+    background-color: #000;
+    color:            #fff;
+    margin-right:     5px;
+}
+
+.input-file {
+    display: none !important;
+}
+
+.custom-file-upload {
+    border:  1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor:  pointer;
+}
+
+@media(min-width: 350px) {
+    .mail-form {
+        width:      100%;
+        margin:     0 auto;
+        box-sizing: border-box;
+        max-width:  750px;
+    }
+}
+
+.input-with-symbol {
+    $symbol-width: 100px;
+    &_wrap {
+        display:         flex;
+        justify-content: center;
+        flex-wrap:       nowrap;
+
+        > * {
+            display:    inline-block;
+            box-sizing: border-box;
+        }
+    }
+
+    &_input {
+        width:         100%;
+        padding-right: $symbol-width;
+        margin-right:  -$symbol-width;
+    }
+
+    &_symbol {
+        width:       $symbol-width;
+        margin-left: -5px;
+    }
+}

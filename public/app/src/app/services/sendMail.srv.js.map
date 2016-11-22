@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "sendMail.srv.js",
+  "sourceRoot": "",
+  "sources": [
+    "sendMail.srv.ts"
+  ],
+  "names": [],
+  "mappings": ";;;;;;;AAAA,qBAAyB,eAAe,CAAC,CAAA;AAIzC;IAAA;IAOA,CAAC;IALG,sCAAsC;IAEtC,kCAAQ,GAAR;QACI,MAAM,CAAC,IAAI,CAAC,IAAI,CAAC,eAAe,CAAC,CAAC;IACtC,CAAC;IAPL;QAAC,iBAAU,EAAE;uBAAA;IAQb,sBAAC;AAAD,CAAC,AAPD,IAOC;AAPY,uBAAe,kBAO3B,CAAA"
+}
