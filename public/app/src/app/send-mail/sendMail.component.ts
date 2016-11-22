@@ -1,13 +1,13 @@
 import {Component} from '@angular/core';
 import {FileUploader} from 'ng2-file-upload/ng2-file-upload';
 import {SendMailService} from '../services/sendMail.srv';
-
+import './sendMail.component.scss';
 const urlToUploadFiles = 'api/sendFile';
 
 @Component({
     selector:    'send-mail',
     templateUrl: './sendMail.component.html',
-    styleUrls:   ['./sendMail.component.css']
+    // styleUrls:   ['./sendMail.component.scss']
 })
 export class SendMail {
     message: string;

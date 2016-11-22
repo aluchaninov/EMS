@@ -22,7 +22,6 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 /*
  * Webpack Constants
  */
-const HMR = helpers.hasProcessFlag('hot');
 const METADATA = {
     title:       'Angular2 Webpack Starter by @gdi2290 from @AngularClass',
     baseUrl:     '/',
@@ -114,6 +113,11 @@ module.exports = function(options) {
                 {
                     test:   /\.json$/,
                     loader: 'json-loader'
+                },
+
+                {
+                    test:    /\.scss$/,
+                    loaders: ["style-loader", "css-loader", "sass-loader"]
                 },
 
                 /*
