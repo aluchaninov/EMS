@@ -2,5 +2,5 @@
   "secret": "123456asd",
   "usersDB": "mongodb://localhost/users",
   "tasksDB": "mongodb://localhost/tasks",
-  "folderForFiles": "bin/uploadedFiles/"
+  "folderForFiles": "./uploadedFiles/"
 }

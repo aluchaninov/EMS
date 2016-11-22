@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {FileUploader} from 'ng2-file-upload/ng2-file-upload';
 import {SendMailService} from '../services/sendMail.srv';
 import './sendMail.component.scss';
+
 const urlToUploadFiles = 'api/sendFile';
 
 @Component({
@@ -48,11 +49,14 @@ export class SendMail {
                                    let sentEmail = this.user.receiversList.find((e) => e.id === r.id);
                                    //case for handling incorrect email
                                    sentEmail.status = r['success'] === false ? 'error' : 'success';
+                                   this.showMessage('Email was sent successfully', true);
                                },
                                (e) => {
                                    let notSentEmail = this.user.receiversList.find((e) => e.id === e.id);
                                    //case for normal errors - when something happend during email sending
                                    notSentEmail.status = 'error';
+                                   console.info(e);
+                                   this.showMessage(e && e.message && e.message.response);
                                }, () => {
                                    console.info('done');
                                });
