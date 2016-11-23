@@ -17,6 +17,7 @@ export class SendMail {
     sub;
     sendMailSrv: SendMailService;
     uploader: FileUploader = new FileUploader({url: urlToUploadFiles, autoUpload: true});
+    successCounter: number;
     listOfBadEmails: Receiver[];
     private credsKey: string = 'emailCreds';
 
@@ -26,6 +27,7 @@ export class SendMail {
         this.sendMailSrv = sendMailSrv;
         this.user.receiversList = [];
         this.user.receiversMails = '';
+        this.successCounter = 0;
     }
 
     send({form, valid}) {
@@ -48,7 +50,15 @@ export class SendMail {
                                (r: Receiver) => {
                                    let sentEmail = this.user.receiversList.find((e) => e.id === r.id);
                                    //case for handling incorrect email
-                                   sentEmail.status = r['success'] === false ? 'error' : 'success';
+                                   // sentEmail.status = r['success'] === false ? : 'success';
+
+                                   if (r['success'] === false) {
+                                       sentEmail.status = 'error';
+                                       sentEmail['message'] = r['message'];
+                                   } else {
+                                       sentEmail.status = 'success';
+                                       this.successCounter++;
+                                   }
                                    this.showMessage('Email was sent successfully', true);
                                },
                                (e) => {

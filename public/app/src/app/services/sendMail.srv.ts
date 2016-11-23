@@ -13,7 +13,7 @@ export class SendMailService {
 
     static handleError(observer, err) {
         err.proposition = 'You can check your Email Quota at https://ctrlq.org/google.apps.script/utilities/quota.html';
-        observer.error(err);
+        observer.next(err);
     }
 
     sendMail(data: Object) {
@@ -29,7 +29,8 @@ export class SendMailService {
             });
 
             this.socket.on('error', (err) => {
-                SendMailService.handleError(observer, err);
+                // SendMailService.handleError(observer, err);
+                observer.error(err);
             });
 
             this.socket.emit('send-mails', data);

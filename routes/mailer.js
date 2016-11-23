@@ -5,8 +5,17 @@ class Mailer {
     constructor(opts) {
         if (!opts) return;
 
-        this.auth = `smtps://${opts.username}%40gmail.com:${opts.password}@smtp.gmail.com`;
-        this.transporter = nodemailer.createTransport(this.auth);
+        this.transportConfig = {
+            pool:   true,
+            host:   'smtp.gmail.com',
+            port:   465,
+            secure: true, // use SSL
+            auth:   {
+                user: `${opts.username}@gmail.com`,
+                pass: opts.password
+            }
+        };
+        this.transporter = nodemailer.createTransport(this.transportConfig);
         this.userMail = opts.userMail;
         this.subject = opts.subject;
         this.text = opts.text;
@@ -60,6 +69,7 @@ class Mailer {
 
                         if (error) {
                             result.message = error;
+                            result.success = false;
                             reject(result);
                             return false;
                         }

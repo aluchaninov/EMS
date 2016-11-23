@@ -80,12 +80,14 @@
                 text-decoration: underline;
             }
             &.success {
-                color:      green;
-                background: url('checked.svg') 100% 50% no-repeat transparent;
+                color:           green;
+                background:      url('checked.svg') 100% 50% no-repeat transparent;
+                background-size: 20px;
             }
             &.error {
-                color:      darkred;
-                background: url('cancel.svg') 100% 50% no-repeat transparent;
+                color:           darkred;
+                background:      url('cancel.svg') 100% 50% no-repeat transparent;
+                background-size: 20px;
             }
         }
     }
