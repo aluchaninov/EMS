@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const config = require('../config.json');
 
 class Mailer {
     constructor(opts) {
@@ -30,12 +31,28 @@ class Mailer {
                         resolve(result);
                         return;
                     }
+                let text = this.text.replace(/\n/ig, '<br>');
+
                     const mailOptions = {
                         // from:    'me',
-                        to:      receiver['email'],
-                        subject: this.subject,
-                        text:    this.text, // plaintext body
-                        //html:    '<b>Hello world ?</b>' // html body
+                        to:          receiver['email'],
+                        priority:    'high',
+                        subject:     this.subject,
+                        // text:        text, // plaintext body
+                        html:        `<p>${text}</p><br><br><br>Z poważaniem,<br>Koło Naukowe Zarządzania i Marketingu UMCS <br>
+                                        <img src="cid:bjgdnkbgfjbkfknbkf" width="200"/> <img src="cid:vxdbv87dufdbdx" width="70"/>`, // html body
+                        attachments: [
+                            {
+                                filename: 'umcs-logo.jpg',
+                                path:     config.attachmentsFolder + 'umcs-logo.jpg',
+                                cid:      'bjgdnkbgfjbkfknbkf'
+                            },
+                            {
+                                filename: 'knzim-logo.jpg',
+                                path:     config.attachmentsFolder + 'knzim-logo.jpg',
+                                cid:      'vxdbv87dufdbdx'
+                            }
+                        ]
                     };
 
                     this.transporter.sendMail(mailOptions, function(error, info) {
