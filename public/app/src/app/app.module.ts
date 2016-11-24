@@ -9,6 +9,7 @@ import {AppState} from './app.service';
 import {FileSelectDirective} from 'ng2-file-upload/ng2-file-upload';
 import {SendMailService} from './services/sendMail.srv'
 import {SendMail} from './send-mail/sendMail.component';
+import {SpinnerComponent} from './spinner/spinner.component';
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -24,7 +25,8 @@ const APP_PROVIDERS = [
     declarations: [
         HomeComponent,
         SendMail,
-        FileSelectDirective
+        FileSelectDirective,
+        SpinnerComponent
     ],
     providers:    [
         ENV_PROVIDERS,

@@ -128,6 +128,13 @@ button,
     background-color: #000;
     color:            #fff;
     margin-right:     7px;
+    text-transform:   capitalize;
+    border-radius:    3px;
+    letter-spacing:   1.5px;
+
+    &[disabled] {
+        background-color: #797979;
+    }
 }
 
 .input-file {
@@ -164,6 +171,11 @@ button,
         width:       $symbol-width;
         margin-left: -5px;
     }
+}
+
+spinner {
+    display:        inline-block;
+    vertical-align: middle;
 }
 
 @media(min-width: 350px) {

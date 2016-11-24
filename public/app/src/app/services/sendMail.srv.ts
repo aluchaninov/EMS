@@ -43,7 +43,7 @@ export class SendMailService {
         });
     }
 
-    verifyMails(mails: string|Array<string>) {
+    verifyMails(mails: string|Array<string>, queueLimit: number = 100) {
         let listOfBadEmails: Receiver[] = [];
         let receiversList: Receiver[] = [];
         let receiversMails: string = '';
@@ -61,7 +61,7 @@ export class SendMailService {
             }
         }));
 
-        let sortedEmailsList = this.buildQueue(receiversList, 100);
+        let sortedEmailsList = this.buildQueue(receiversList, queueLimit);
 
         return {
             listOfBadEmails: listOfBadEmails,
@@ -75,7 +75,7 @@ export class SendMailService {
     buildQueue(list: Receiver[], limit: number) {
         return {
             willSendTo:    list.slice(0, limit),
-            willNotSendTo: list.slice(limit, list.length - 1)
+            willNotSendTo: list.slice(limit, list.length)
         }
     }
 

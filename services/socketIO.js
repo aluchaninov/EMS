@@ -22,6 +22,11 @@ module.exports = function(server) {
 
             console.info('mailsInProgress has ', mailsInProgress.length, ' promises');
 
+            if (mailsInProgress.length === 0) {
+                io.emit('error', {message: {response: 'Please provide at least one email'}});
+                return;
+            }
+
             mailsInProgress.forEach && mailsInProgress.forEach(function(mail) {
                 mail.then((r) => {
                         io.emit('mails-sent', r);

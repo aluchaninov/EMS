@@ -3,8 +3,7 @@ import './home.component.scss';
 
 @Component({
     selector:    'app',
-    templateUrl: './home.component.html',
-    // styleUrls:   ['./home.component.scss']
+    templateUrl: './home.component.html'
 })
 export class HomeComponent {
 }

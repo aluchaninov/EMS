@@ -1,6 +1,6 @@
 <h2 class="mail-form_main-header">!!!Evil spam form!!!</h2>
 
-<form novalidate #f="ngForm" (ngSubmit)="send(f)" class="mail-form">
+<form novalidate #f="ngForm" (ngSubmit)="send(f, $event)" class="mail-form">
     <label class="row">
         <span class="one-third mail-form_item-name">
             your email:
@@ -82,7 +82,9 @@
         </span>
     </label>
 
-    <button>send email</button>
+    <button [disabled]="sendingInProgress">send email</button>
+
+    <spinner *ngIf="sendingInProgress"></spinner>
 
     <p *ngIf="message" class="mail-form_message">
         {{message}}
@@ -94,7 +96,7 @@
         <h3 class="sender-log_header row">
             Emails will be sent <span class="small"> ({{user?.receiversList?.length}})</span>:
         </h3>
-        <span class="small">totally sent to {{successCounter}} emails</span>
+        <span class="small">successfully sent to {{successCounter}} emails</span>
 
         <ul class="receivers-list receivers-list_valid row">
             <li *ngFor="let item of user?.receiversList" [ngClass]="item.status" class="receivers-list_valid_item">

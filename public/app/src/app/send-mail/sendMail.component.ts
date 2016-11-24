@@ -1,28 +1,28 @@
 import {Component} from '@angular/core';
 import {FileUploader} from 'ng2-file-upload/ng2-file-upload';
+
 import {SendMailService} from '../services/sendMail.srv';
-import './sendMail.component.scss';
 import {Receiver} from '../schemas/receiver';
 import {User} from '../schemas/user';
-import {Observable} from 'rxjs/observable';
+import './sendMail.component.scss';
 
 const urlToUploadFiles = 'api/sendFile';
 
 @Component({
     selector:    'send-mail',
     templateUrl: './sendMail.component.html',
-    // styleUrls:   ['./sendMail.component.scss']
 })
 export class SendMail {
     message: string;
     user: User;
     username: String;
-    sub: Observable<Receiver>;
+    sub;
     sendMailSrv: SendMailService;
     uploader: FileUploader = new FileUploader({url: urlToUploadFiles, autoUpload: true});
     successCounter: number;
     listOfBadEmails: Receiver[];
     listOfLimitedEmails: Receiver[];
+    sendingInProgress: boolean;
     private credsKey: string = 'emailCreds';
 
     constructor(sendMailSrv: SendMailService) {
@@ -31,13 +31,17 @@ export class SendMail {
         this.sendMailSrv = sendMailSrv;
         this.user.receiversList = this.listOfLimitedEmails = [];
         this.user.receiversMails = '';
-        this.successCounter = 0;
     }
 
-    send({form, valid}) {
+    send({form, valid}, e) {
+        if (e) {
+            e.preventDefault();
+        }
         console.info(form);
 
         if (valid) {
+            this.successCounter = 0;
+
             form.value.receiversList = this.user.receiversList;
 
             this.user = form.value;
@@ -47,15 +51,12 @@ export class SendMail {
                 return false;
             }
 
-            this.sub && this.sub['unsubscribe']();
+            this.sub && this.sub['unsubscribe'] && this.sub['unsubscribe']();
 
-            this.sub = this.sendMailSrv.sendMail(this.user);
-
-            this.sub.subscribe(
+            this.sub = this.sendMailSrv.sendMail(this.user).subscribe(
                 (r: Receiver) => {
                     let sentEmail = this.user.receiversList.find((e) => e.id === r.id);
                     //case for handling incorrect email
-                    // sentEmail.status = r['success'] === false ? : 'success';
                     if (r['success'] === false) {
                         sentEmail.status = 'error';
                         sentEmail['message'] = r['message'];
@@ -63,16 +64,23 @@ export class SendMail {
                         sentEmail.status = 'success';
                         this.successCounter++;
                     }
+
+                    if (this.successCounter === this.user.receiversList.length) {
+                        this.sendingInProgress = false;
+                    }
                 },
                 (e) => {
                     let notSentEmail = this.user.receiversList.find((e) => e.id === e.id);
                     //case for normal errors - when something happend during email sending
-                    notSentEmail.status = 'error';
+                    notSentEmail ? notSentEmail.status = 'error' : null;
                     console.info(e);
                     this.showMessage(e && e.message && e.message.response);
+                    this.sendingInProgress = false;
                 }, () => {
                     console.info('done');
                 });
+
+            this.sendingInProgress = true;
         } else {
             // console.info(form.controls);
             for (let key in form.controls) {
@@ -105,7 +113,7 @@ export class SendMail {
     }
 
     clearReceiversList(inputID) {
-        this.listOfBadEmails = this.user.receiversList = [];
+        this.listOfBadEmails = this.user.receiversList = this.listOfLimitedEmails = [];
 
         this.user.receiversMails = '';
 
