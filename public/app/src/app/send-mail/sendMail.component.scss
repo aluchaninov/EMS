@@ -25,7 +25,15 @@
     }
 
     .half-width {
-        width: calc(100% / 2);
+        width:          calc(99.2% / 2);
+        vertical-align: top;
+    }
+
+    .small {
+        font-size:   75%;
+        color:       #a8a8a8;
+        line-height: 1;
+        margin:      0;
     }
 }
 
@@ -61,6 +69,18 @@
 
 .sender-log {
     @extend .mail-form;
+
+    &_header {
+        + .small {
+            display:       block;
+            margin-top:    -1em;
+            margin-bottom: 1em;
+        }
+
+        .small {
+            margin-left: 5px;
+        }
+    }
 }
 
 .receivers-list {
@@ -69,24 +89,33 @@
     margin:     0;
 
     &_invalid {
+        &_item {
+            line-height:   25px;
+            overflow:      hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0;
+        }
     }
 
     &_valid {
         &_item {
-            padding-right: 30px;
+            padding-left:  30px;
+            line-height:   25px;
+            overflow:      hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0 !important;
 
             &.pending {
-                color:           gray;
-                text-decoration: underline;
+                color: gray;
             }
             &.success {
                 color:           green;
-                background:      url('checked.svg') 100% 50% no-repeat transparent;
+                background:      url('checked.svg') 0 50% no-repeat transparent;
                 background-size: 20px;
             }
             &.error {
                 color:           darkred;
-                background:      url('cancel.svg') 100% 50% no-repeat transparent;
+                background:      url('cancel.svg') 0 50% no-repeat transparent;
                 background-size: 20px;
             }
         }
@@ -112,15 +141,6 @@ button,
     cursor:  pointer;
 }
 
-@media(min-width: 350px) {
-    .mail-form {
-        width:      100%;
-        margin:     0 auto;
-        box-sizing: border-box;
-        max-width:  750px;
-    }
-}
-
 .input-with-symbol {
     $symbol-width: 100px;
     &_wrap {
@@ -143,5 +163,14 @@ button,
     &_symbol {
         width:       $symbol-width;
         margin-left: -5px;
+    }
+}
+
+@media(min-width: 350px) {
+    .mail-form {
+        width:      100%;
+        margin:     0 auto;
+        box-sizing: border-box;
+        max-width:  750px;
     }
 }

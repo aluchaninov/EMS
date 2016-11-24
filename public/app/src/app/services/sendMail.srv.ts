@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Rx';
+import {Observable} from 'rxjs/observable';
 import * as io from 'socket.io-client';
+
+import {Receiver} from '../schemas/receiver';
 
 @Injectable()
 export class SendMailService {
@@ -16,7 +18,7 @@ export class SendMailService {
         observer.next(err);
     }
 
-    sendMail(data: Object) {
+    sendMail(data: Object): Observable<Receiver> {
         this.socket = io(this.url);
 
         return new Observable((observer) => {
@@ -39,5 +41,63 @@ export class SendMailService {
                 this.socket.disconnect();
             };
         });
+    }
+
+    verifyMails(mails: string|Array<string>) {
+        let listOfBadEmails: Receiver[] = [];
+        let receiversList: Receiver[] = [];
+        let receiversMails: string = '';
+
+        let pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i,
+            data = this.processEmailsList(mails);
+
+        data.forEach((val => {
+            if (!pattern.test(val.email)) {
+                listOfBadEmails.push(val);
+            } else {
+                receiversList.push(val);
+
+                receiversMails += receiversList.length > 1 ? ', ' + val.email : val.email;
+            }
+        }));
+
+        let sortedEmailsList = this.buildQueue(receiversList, 100);
+
+        return {
+            listOfBadEmails: listOfBadEmails,
+            receiversList:   receiversList,
+            willSendTo:      sortedEmailsList.willSendTo,
+            willNotSendTo:   sortedEmailsList.willNotSendTo,
+            receiversMails:  sortedEmailsList.willSendTo.map((email) => email.email).join(', '),
+        }
+    }
+
+    buildQueue(list: Receiver[], limit: number) {
+        return {
+            willSendTo:    list.slice(0, limit),
+            willNotSendTo: list.slice(limit, list.length - 1)
+        }
+    }
+
+    processEmailsList(list: string|Array<string>): Receiver[] {
+        if (typeof list === 'string') {
+            return list.split(',').map((el) => {
+                return {
+                    email:  el.trim(),
+                    status: 'pending',
+                    id:     +(Date.now() + ((1 - Math.random()) * 100).toFixed())
+                }
+            });
+        } else if (typeof list.map === 'function') {
+            return list.map((el) => {
+                return {
+                    email:  el.trim(),
+                    status: 'pending',
+                    id:     +(Date.now() + ((1 - Math.random()) * 100).toFixed())
+                }
+            });
+        } else {
+            return;
+        }
     }
 }

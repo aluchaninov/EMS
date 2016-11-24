@@ -35,7 +35,6 @@ class Mailer {
                     };
 
                     if (!pattern.test(receiver['email'])) {
-                        console.info(`email to ${receiver['email']} was\'t sent. Bad email`);
                         result.success = false;
                         resolve(result);
                         return;

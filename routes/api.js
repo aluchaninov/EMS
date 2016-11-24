@@ -24,7 +24,6 @@ router.post('/sendFile', upload.single('file'), (req, res) => {
 
         for (let key in worksheet) {
             if (worksheet.hasOwnProperty(key) && key.indexOf('A') === 0) {
-                console.info(worksheet[key].w);
                 r.push(worksheet[key].w);
             }
         }

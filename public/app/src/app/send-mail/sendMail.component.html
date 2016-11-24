@@ -91,12 +91,13 @@
 
 <div class="sender-log row">
     <div class="half-width" *ngIf="user?.receiversList?.length > 0">
-        <h3 class="sender-log_header row">Email will be sent to ({{user?.receiversList?.length}}):</h3>
-
-        <span>totally sent to {{successCounter}} emails</span>
+        <h3 class="sender-log_header row">
+            Emails will be sent <span class="small"> ({{user?.receiversList?.length}})</span>:
+        </h3>
+        <span class="small">totally sent to {{successCounter}} emails</span>
 
         <ul class="receivers-list receivers-list_valid row">
-            <li *ngFor="let item of user?.receiversList" [ngClass]="item.status" class="receivers-list_valid_item row">
+            <li *ngFor="let item of user?.receiversList" [ngClass]="item.status" class="receivers-list_valid_item">
                 {{item.email}}
 
                 {{item.status === 'error' && !item.message ? 'Bad email': null}}
@@ -106,15 +107,24 @@
     </div>
 
     <div class="half-width" *ngIf="listOfBadEmails?.length > 0">
-        <h3 class="sender-log_header row">Invalid emails:</h3>
+        <h3 class="sender-log_header row">
+            Invalid emails <span class="small"> ({{listOfBadEmails.length}})</span>:
+        </h3>
 
-        <ul class="receivers-list receivers-list_invalid row">
-            <li *ngFor="let item of listOfBadEmails" [ngClass]="item.status" class="receivers-list_invalid_item row">
+        <ul class="receivers-list receivers-list_invalid">
+            <li *ngFor="let item of listOfBadEmails" class="receivers-list_invalid_item">
                 {{item.email}}
-
-                {{item.status === 'error' ? 'Bad email': null}}
             </li>
         </ul>
     </div>
 
+    <div class="row" *ngIf="listOfLimitedEmails?.length > 0">
+        <h3>
+            Emails which won't be part of this mailing <span class="small"> ({{listOfLimitedEmails.length}})</span>:
+        </h3>
+
+        <ul class="receivers-list">
+            <li *ngFor="let item of listOfLimitedEmails">{{item.email}}</li>
+        </ul>
+    </div>
 </div>

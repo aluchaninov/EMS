@@ -2,6 +2,9 @@ import {Component} from '@angular/core';
 import {FileUploader} from 'ng2-file-upload/ng2-file-upload';
 import {SendMailService} from '../services/sendMail.srv';
 import './sendMail.component.scss';
+import {Receiver} from '../schemas/receiver';
+import {User} from '../schemas/user';
+import {Observable} from 'rxjs/observable';
 
 const urlToUploadFiles = 'api/sendFile';
 
@@ -14,18 +17,19 @@ export class SendMail {
     message: string;
     user: User;
     username: String;
-    sub;
+    sub: Observable<Receiver>;
     sendMailSrv: SendMailService;
     uploader: FileUploader = new FileUploader({url: urlToUploadFiles, autoUpload: true});
     successCounter: number;
     listOfBadEmails: Receiver[];
+    listOfLimitedEmails: Receiver[];
     private credsKey: string = 'emailCreds';
 
     constructor(sendMailSrv: SendMailService) {
         let creds = this.getUser();
         this.user = creds ? new User(creds.username, creds.password) : new User('', '');
         this.sendMailSrv = sendMailSrv;
-        this.user.receiversList = [];
+        this.user.receiversList = this.listOfLimitedEmails = [];
         this.user.receiversMails = '';
         this.successCounter = 0;
     }
@@ -43,33 +47,32 @@ export class SendMail {
                 return false;
             }
 
-            this.sub && this.sub.unsubscribe();
+            this.sub && this.sub['unsubscribe']();
 
-            this.sub = this.sendMailSrv.sendMail(this.user)
-                           .subscribe(
-                               (r: Receiver) => {
-                                   let sentEmail = this.user.receiversList.find((e) => e.id === r.id);
-                                   //case for handling incorrect email
-                                   // sentEmail.status = r['success'] === false ? : 'success';
+            this.sub = this.sendMailSrv.sendMail(this.user);
 
-                                   if (r['success'] === false) {
-                                       sentEmail.status = 'error';
-                                       sentEmail['message'] = r['message'];
-                                   } else {
-                                       sentEmail.status = 'success';
-                                       this.successCounter++;
-                                   }
-                                   this.showMessage('Email was sent successfully', true);
-                               },
-                               (e) => {
-                                   let notSentEmail = this.user.receiversList.find((e) => e.id === e.id);
-                                   //case for normal errors - when something happend during email sending
-                                   notSentEmail.status = 'error';
-                                   console.info(e);
-                                   this.showMessage(e && e.message && e.message.response);
-                               }, () => {
-                                   console.info('done');
-                               });
+            this.sub.subscribe(
+                (r: Receiver) => {
+                    let sentEmail = this.user.receiversList.find((e) => e.id === r.id);
+                    //case for handling incorrect email
+                    // sentEmail.status = r['success'] === false ? : 'success';
+                    if (r['success'] === false) {
+                        sentEmail.status = 'error';
+                        sentEmail['message'] = r['message'];
+                    } else {
+                        sentEmail.status = 'success';
+                        this.successCounter++;
+                    }
+                },
+                (e) => {
+                    let notSentEmail = this.user.receiversList.find((e) => e.id === e.id);
+                    //case for normal errors - when something happend during email sending
+                    notSentEmail.status = 'error';
+                    console.info(e);
+                    this.showMessage(e && e.message && e.message.response);
+                }, () => {
+                    console.info('done');
+                });
         } else {
             // console.info(form.controls);
             for (let key in form.controls) {
@@ -81,36 +84,24 @@ export class SendMail {
         }
     }
 
-    processEmailsFile(file) {
+    processEmailsFile(file: any) {
         this.uploader.onCompleteItem = (item, response: string, status: number) => {
             if (status === 200) {
                 let res = JSON.parse(response);
-                this.verifyMails(res)
+                this.verifyMails(res);
             } else {
                 this.showMessage('Provided file is not supported', true);
             }
         }
     }
 
-    verifyMails(mails) {
-        this.listOfBadEmails = [];
-        this.user.receiversList = [];
-        this.user.receiversMails = '';
-
-        let pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i,
-            data = SendMail.processEmailsList(mails);
-
-        data.forEach((val => {
-            if (!pattern.test(val.email)) {
-                this.listOfBadEmails.push(val);
-            } else {
-                this.user.receiversList.push(val);
-
-                let email = this.user.receiversList.length > 1 ? ', ' + val.email : val.email;
-
-                this.user.receiversMails += email;
-            }
-        }));
+    verifyMails(list: string|Array<string>) {
+        let verifiedMails = this.sendMailSrv.verifyMails(list);
+        console.info(verifiedMails);
+        this.listOfBadEmails = verifiedMails.listOfBadEmails;
+        this.user.receiversList = verifiedMails.willSendTo;
+        this.user.receiversMails = verifiedMails.receiversMails;
+        this.listOfLimitedEmails = verifiedMails.willNotSendTo;
     }
 
     clearReceiversList(inputID) {
@@ -155,49 +146,5 @@ export class SendMail {
                 delete this.message;
             }, 3000);
         }
-    }
-
-    static processEmailsList(list: string|Array<string>): Receiver[] {
-        if (typeof list === 'string') {
-            return list.split(',').map((el) => {
-                return {
-                    email:  el.trim(),
-                    status: 'pending',
-                    id:     +(Date.now() + ((1 - Math.random()) * 100).toFixed())
-                }
-            });
-        } else if (typeof list.map === 'function') {
-            return list.map((el) => {
-                return {
-                    email:  el.trim(),
-                    status: 'pending',
-                    id:     +(Date.now() + ((1 - Math.random()) * 100).toFixed())
-                }
-            });
-        } else {
-            return;
-        }
-    }
-}
-
-class Receiver {
-    email: string;
-    status: string;
-    id: Number;
-}
-
-class User {
-    username: string;
-    password: string;
-    valid?: boolean;
-    value?: any;
-    receiversList?: Receiver[];
-    receiversMails?: string;
-    subject?: string;
-    text?: string;
-
-    constructor(username: string, password: string) {
-        this.username = username;
-        this.password = password;
     }
 }
